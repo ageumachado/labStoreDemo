@@ -1,0 +1,45 @@
+<p-card
+  [header]="operacao + ' - Loja'"
+  subheader="Adição e alteração de lojas"
+  [style]="{ width: '360px' }"
+>
+  <form [formGroup]="form">
+    <div class="field">
+      <p-floatLabel>
+        <input
+          id="urlEndpoint"
+          type="text"
+          pInputText
+          formControlName="urlEndpoint"
+        />
+        <label for="username">Url Endpoint</label>
+      </p-floatLabel>
+    </div>
+    <div class="field">
+      <p-floatLabel>
+        <input
+          id="descricao"
+          type="text"
+          pInputText
+          formControlName="descricao"
+        />
+        <label for="descricao">Descrição</label>
+      </p-floatLabel>
+    </div>
+    <div class="field">
+      <p-inputSwitch formControlName="ativo" />
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <div class="flex gap-3 mt-1">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        class="w-full"
+        styleClass="w-full"
+        [routerLink]="['/loja']"
+      />
+      <p-button label="Salvar" class="w-full" styleClass="w-full" />
+    </div>
+  </ng-template>
+</p-card>
