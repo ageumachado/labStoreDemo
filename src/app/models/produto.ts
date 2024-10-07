@@ -1,9 +1,12 @@
 export interface Produto {
-  id: string;
+  id?: string;
   nome: string;
-  descricao: string;
+  descricao: string | null;
+  imagemUrl: string | null;
+  tempoPreparo?: number;
+  preco: number;
+  ordem: number;
+  ehPausado: boolean;
   ativo: boolean;
-  esgotado: boolean;
-  pausado: boolean;
-  quantidadeEstoque: number;
+  estoque?: number;
 }

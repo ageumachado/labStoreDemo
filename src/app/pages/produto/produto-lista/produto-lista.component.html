@@ -1,74 +1,194 @@
-<h3>Gerenciamento de produtos</h3>
+<!-- <p-toast></p-toast> -->
 
-<p-toolbar>
-  <div class="p-toolbar-group-start">
-    <p-button
-      [routerLink]="['criar']"
-      routerLinkActive="router-link-active"
-      pTooltip="Adicionar"
-      icon="pi pi-plus"
-      class="mr-2"
-    />
+<div class="animate__animated animate__fadeInRight">
+  <div class="grid table-demo">
+    <div class="col-12">
+      <div class="card">
+        <p-toolbar styleClass="mb-4">
+          <ng-template pTemplate="left">
+            <p-button
+              pRipple
+              label="Adicionar"
+              icon="pi pi-plus"
+              class="button-success mr-2"
+              [routerLink]="['criar']"
+            ></p-button>
+          </ng-template>
+        </p-toolbar>
+
+        <p-table
+          #dt
+          [value]="itemLista"
+          [loading]="carregando"
+          dataKey="id"
+          styleClass="p-datatable-grid p-datatable-sm"
+          [rowHover]="true"
+          [rows]="10"
+          [paginator]="true"
+          [showCurrentPageReport]="true"
+          [tableStyle]="{ 'min-width': '50rem' }"
+          [rowsPerPageOptions]="[10, 25, 50]"
+          [globalFilterFields]="['descricao']"
+          responsiveLayout="scroll"
+        >
+          <ng-template pTemplate="caption">
+            <div
+              class="flex flex-column md:flex-row md:justify-content-between table-header"
+            >
+              Produtos
+              <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input
+                  #buscaGlobal
+                  pInputText
+                  type="text"
+                  (input)="dt.filterGlobal(buscaGlobal.value, 'contains')"
+                  placeholder="Buscar"
+                />
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="nome">
+                <div class="flex justify-content-between align-items-center">
+                  nome
+                  <p-sortIcon field="nome"></p-sortIcon>
+                  <p-columnFilter
+                    type="text"
+                    field="nome"
+                    display="menu"
+                    class="ml-auto"
+                  ></p-columnFilter>
+                </div>
+              </th>
+              <th pSortableColumn="preco">
+                <div class="flex justify-content-between align-items-center">
+                  Preço
+                  <p-sortIcon field="preco"></p-sortIcon>
+                  <p-columnFilter
+                    type="text"
+                    field="preco"
+                    display="menu"
+                    class="ml-auto"
+                  ></p-columnFilter>
+                </div>
+              </th>
+
+              <th pSortableColumn="promocao.preco">
+                <div class="flex justify-content-between align-items-center">
+                  Promoção
+                  <p-sortIcon field="promocao.preco"></p-sortIcon>
+                  <p-columnFilter
+                    type="text"
+                    field="promocao.preco"
+                    display="menu"
+                    class="ml-auto"
+                  ></p-columnFilter>
+                </div>
+              </th>
+
+              <th pSortableColumn="ehPausado">
+                <div class="flex justify-content-between align-items-center">
+                  Pausar?
+                  <p-sortIcon field="ehPausado"></p-sortIcon>
+                  <p-columnFilter
+                    type="boolean"
+                    field="ehPausado"
+                    display="menu"
+                    class="ml-auto"
+                  ></p-columnFilter>
+                </div>
+              </th>
+              <th pSortableColumn="ativo">
+                <div class="flex justify-content-between align-items-center">
+                  Ativo
+                  <p-sortIcon field="ativo"></p-sortIcon>
+                  <p-columnFilter
+                    type="text"
+                    field="ativo"
+                    display="menu"
+                    class="ml-auto"
+                  ></p-columnFilter>
+                </div>
+              </th>
+              <th style="width: 15rem">
+                <div class="flex justify-content-center align-items-center">
+                  Ação
+                </div>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+            <tr class="p-selectable-row">
+              <td>
+                <span class="column-title">Nome</span>
+                {{ item.nome }}
+              </td>
+              <td>
+                <span class="column-title">Preço</span>
+                {{ item.preco | currency: "BRL" }}
+              </td>
+              <td>
+                <span class="column-title">Promoção</span>
+                <span [ngClass]="{ 'line-through': !item.ativarPromocao }">{{
+                  item.promocao?.preco ?? 0 | currency: "BRL"
+                }}</span>
+              </td>
+
+              <td>
+                <span class="column-title">Pausar?</span>
+                <div class="flex align-content-center">
+                  <p-tag
+                    styleClass="mr-2"
+                    [severity]="item.ehPausado ? 'danger' : 'success'"
+                    [value]="item.ehPausado ? 'Pausado' : 'Liberado'"
+                  ></p-tag>
+                  <p-inputSwitch
+                    [(ngModel)]="item.ehPausado"
+                    (onChange)="onPausarChange(item)"
+                  ></p-inputSwitch>
+                </div>
+              </td>
+              <td>
+                <span class="column-title">Ativo</span>
+                <p-inputSwitch
+                  [(ngModel)]="item.ativo"
+                  (onChange)="onAtivarChange(item)"
+                ></p-inputSwitch>
+              </td>
+              <td>
+                <span class="column-title">Ação</span>
+                <div
+                  class="flex align-items-center justify-content-center gap-2"
+                >
+                  <button
+                    pButton
+                    type="button"
+                    class="p-button-secondary mr-2"
+                    icon="pi pi-pencil"
+                    pTooltip="Editar"
+                    [routerLink]="[item.id]"
+                  ></button>
+                  <!-- <p-splitButton
+                    icon="pi pi-ellipsis-v"
+                    appendTo="body"
+                    [model]="itemsMenu"
+                    (onClick)="openMenu($event, item)"
+                    (onDropdownClick)="openMenu($event, item)"
+                    styleClass="p-button-raised p-button-rounded p-button-text mr-2"
+                  ></p-splitButton> -->
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <!-- <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3">Nenhum registro encontrado.</td>
+            </tr>
+          </ng-template> -->
+        </p-table>
+      </div>
+    </div>
   </div>
-</p-toolbar>
-
-<p-table
-  #dt2
-  [value]="(lojas$ | async) || []"
-  dataKey="id"
-  [rows]="10"
-  [rowsPerPageOptions]="[10, 25, 50]"
-  [loading]="loading"
-  [paginator]="true"
-  [globalFilterFields]="[
-    'name',
-    'country.name',
-    'representative.name',
-    'status',
-  ]"
-  [tableStyle]="{ 'min-width': '75rem' }"
->
-  <ng-template pTemplate="caption"> </ng-template>
-  <ng-template pTemplate="header">
-    <tr>
-      <th style="width: 20%">Nome</th>
-      <th style="width: 30%">Descrição</th>
-      <th style="width: 10%">Esgotado?</th>
-      <th style="width: 10%">Pausado?</th>
-      <th style="width: 10%">Estoque</th>
-      <th style="width: 10%">Status</th>
-      <th style="width: 10%">Ação</th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-loja>
-    <tr>
-      <td>
-        {{ loja.urlEndpoint }}
-      </td>
-
-      <td>
-        {{ loja.descricao }}
-      </td>
-      <td>
-        {{ loja.ativo ? "Sim" : "Não" }}
-      </td>
-      <td>
-        <div class="flex vertical-align-middle gap-3">
-          <p-button
-            icon="pi pi-pencil"
-            [rounded]="true"
-            severity="info"
-            [routerLink]="['/loja', loja.id]"
-            routerLinkActive="router-link-active"
-          />
-          <p-button icon="pi pi-times" [rounded]="true" severity="danger" />
-        </div>
-      </td>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="5">No customers found.</td>
-    </tr>
-  </ng-template>
-</p-table>
+</div>

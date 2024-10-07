@@ -1,45 +1,289 @@
-<p-card
-  [header]="operacao + ' - Loja'"
-  subheader="Adição e alteração de lojas"
-  [style]="{ width: '360px' }"
->
-  <form [formGroup]="form">
-    <div class="field">
-      <p-floatLabel>
-        <input
-          id="urlEndpoint"
-          type="text"
-          pInputText
-          formControlName="urlEndpoint"
-        />
-        <label for="username">Url Endpoint</label>
-      </p-floatLabel>
+<!-- <p-toast></p-toast> -->
+
+<!-- <div *ngrxLet="{ dadosSel$, operacaoActions$ }"></div> -->
+
+<!-- <pre>{{ arrecadacaoSel | json }}</pre> -->
+
+<div class="grid animate__animated animate__fadeInRight">
+  <div class="col-12">
+    <div class="card shadow-4">
+      <form [formGroup]="form">
+        <p-tabView>
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <div class="flex align-items-center gap-2">
+                <i class="pi pi-book"></i>
+                <span>Dados</span>
+              </div>
+            </ng-template>
+            <p-panel>
+              <ng-template pTemplate="icons"> </ng-template>
+              <ng-template pTemplate="header">
+                <div class="p-panel-header-icon">
+                  <i class="pi pi-book"></i>
+                </div>
+                Dados da Loja &nbsp;
+                <b>({{ adicionando ? "Adicionando" : "Editando" }})</b>
+              </ng-template>
+              <div class="p-fluid grid mt-2">
+                <div class="col-12 md:col-12">
+                  <div class="field">
+                    <label for="nome" class="text-blue-500">Nome *</label>
+                    <input
+                      formControlName="nome"
+                      type="text"
+                      id="nome"
+                      pInputText
+                      [class]="errorClass('nome', form)"
+                    />
+                    <small class="p-error block">{{
+                      onObterMensagemError("nome", form)
+                    }}</small>
+                  </div>
+                </div>
+                <div class="col-12 md:col-6">
+                  <div class="field">
+                    <label for="endpoint" class="text-blue-500"
+                      >EndPoint Url * (Site/conexão)</label
+                    >
+                    <span class="p-input-icon-right">
+                      <i [ngClass]="tenantIcon" class="text-green-400"></i>
+                      <input
+                        placeholder="Ex: www.serviceb2x.com.br/seuSite"
+                        formControlName="endpoint"
+                        type="text"
+                        id="endpoint"
+                        pInputText
+                        [class]="errorClass('endpoint', form)"
+                        [pKeyFilter]="blockSpace"
+                      />
+                    </span>
+                    <small class="p-error block">{{
+                      onObterMensagemError(
+                        "tenantId",
+                        form,
+                        "",
+                        "endpointAlreadyExists",
+                        "Endpoint já está em uso"
+                      )
+                    }}</small>
+                  </div>
+                </div>
+
+                <div class="col-12 md:col-12">
+                  <div class="field">
+                    <label for="observacao">Observação</label>
+                    <textarea
+                      rows="3"
+                      style="resize: none"
+                      cols="30"
+                      pInputTextarea
+                      formControlName="observacao"
+                      type="text"
+                      id="observacao"
+                      [class]="errorClass('observacao', form)"
+                    ></textarea>
+                    <small class="p-error block">{{
+                      onObterMensagemError("observacao", form)
+                    }}</small>
+                  </div>
+                </div>
+              </div>
+            </p-panel>
+          </p-tabPanel>
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <div class="flex align-items-center gap-2">
+                <i class="pi pi-map-marker"></i>
+                <span>Endereço</span>
+              </div>
+            </ng-template>
+            <p-panel styleClass="mt-3">
+              <ng-template pTemplate="header">
+                <div class="p-panel-header-icon">
+                  <i class="pi pi-map-marker"></i>
+                </div>
+                Endereço
+              </ng-template>
+              <!-- <amx-endereco-form></amx-endereco-form> -->
+            </p-panel>
+          </p-tabPanel>
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <div class="flex align-items-center gap-2">
+                <i class="pi pi-clock"></i>
+                <span>Horários</span>
+              </div>
+            </ng-template>
+            <p-panel>
+              <ng-template pTemplate="icons"> </ng-template>
+              <ng-template pTemplate="header">
+                <div class="p-panel-header-icon">
+                  <i class="pi pi-clock"></i>
+                </div>
+                Horários &nbsp;
+              </ng-template>
+              <!-- <amx-loja-form-horario
+                [lojaId]="lojaId"
+                [isAdd]="adicionando"
+                [(diaSemanaSelecionados)]="diaSemanaSelecionados"
+                (marcadoChange)="onMarcadoHorario($event)"
+              /> -->
+            </p-panel>
+          </p-tabPanel>
+          <p-tabPanel>
+            <ng-template pTemplate="header">
+              <div class="flex align-items-center gap-2">
+                <i class="pi pi-truck"></i>
+                <span>Tipo de serviços</span>
+              </div>
+            </ng-template>
+            <p-panel>
+              <ng-template pTemplate="icons"> </ng-template>
+              <ng-template pTemplate="header">
+                <div class="p-panel-header-icon">
+                  <i class="pi pi-truck"></i>
+                </div>
+                Tipo de Serviços &nbsp;
+              </ng-template>
+              <!-- <div formGroupName="tipoServico">
+                <div class="p-fluid grid mt-2">
+                  <div class="col-12 md:col-12">
+                    <div class="field-checkbox">
+                      <p-inputSwitch
+                        formControlName="podeRetirarLoja"
+                      ></p-inputSwitch>
+                      <label for="nome" class="text-blue-500"
+                        >Pode retirar na loja?</label
+                      >
+                      <small class="p-error block">{{
+                        onObterMensagemError("podeRetirarLoja", form)
+                      }}</small>
+                    </div>
+                  </div>
+                  <div class="col-12 md:col-12">
+                    <div class="field-checkbox">
+                      <p-inputSwitch
+                        formControlName="podeEntregar"
+                      ></p-inputSwitch>
+                      <label for="nome" class="text-blue-500"
+                        >Pode entregar?</label
+                      >
+                      <small class="p-error block">{{
+                        onObterMensagemError("podeRetirarLoja", form)
+                      }}</small>
+                    </div>
+                  </div>
+
+                  <div class="col-12 md:col-12">
+                    <p-fieldset legend="Configurações da entrega">
+                      <div class="p-fluid grid">
+                        <div class="col-12 md:col-5">
+                          <div class="field">
+                            <label for="tempoEntregaDe" class="text-blue-500"
+                              >Tempo de entrega de (minutos)</label
+                            >
+                            <span class="p-input-icon-right">
+                              <i class="pi pi-clock" class="text-green-400"></i>
+                              <p-inputNumber
+                                [showButtons]="true"
+                                [useGrouping]="false"
+                                [step]="1"
+                                formControlName="tempoEntregaDe"
+                                inputId="tempoEntregaDe"
+                                mode="decimal"
+                                [min]="1"
+                                [max]="100"
+                                [class]="errorClass('tempoEntregaDe', form)"
+                              >
+                              </p-inputNumber>
+                            </span>
+                            <small class="p-error block">{{
+                              onObterMensagemError("tempoEntregaDe", form)
+                            }}</small>
+                          </div>
+                        </div>
+                        <div class="col-12 md:col-5">
+                          <div class="field">
+                            <label for="tempoEntregaAte" class="text-blue-500"
+                              >Tempo de entrega até (minutos)</label
+                            >
+                            <span class="p-input-icon-right">
+                              <i class="pi pi-clock" class="text-green-400"></i>
+                              <p-inputNumber
+                                [showButtons]="true"
+                                [useGrouping]="false"
+                                [step]="1"
+                                formControlName="tempoEntregaAte"
+                                inputId="tempoEntregaAte"
+                                mode="decimal"
+                                [min]="1"
+                                [max]="100"
+                                [class]="errorClass('tempoEntregaAte', form)"
+                              >
+                              </p-inputNumber>
+                            </span>
+                            <small class="p-error block">{{
+                              onObterMensagemError("tempoEntregaAte", form)
+                            }}</small>
+                          </div>
+                        </div>
+                        <div class="col-12 md:col-5">
+                          <div class="field">
+                            <label for="tempoEntregaAte" class="text-blue-500"
+                              >Valor mínimo para entrega (R$)</label
+                            >
+                            <span class="p-input-icon-right">
+                              <i class="pi pi-clock" class="text-green-400"></i>
+                              <p-inputNumber
+                                formControlName="entregarValorMinimo"
+                                inputId="tempoEntregaAte"
+                                mode="currency"
+                                currency="BRL"
+                                [min]="0"
+                                [class]="
+                                  errorClass('entregarValorMinimo', form)
+                                "
+                              >
+                              </p-inputNumber>
+                            </span>
+                            <small
+                              >Se valor igual a 0 (zero) significa que não
+                              haverá limite</small
+                            >
+                            <small class="p-error block">{{
+                              onObterMensagemError("entregarValorMinimo", form)
+                            }}</small>
+                          </div>
+                        </div>
+                      </div>
+                    </p-fieldset>
+                  </div>
+                </div>
+              </div> -->
+            </p-panel>
+          </p-tabPanel>
+        </p-tabView>
+      </form>
+
+      <div class="flex justify-content-center flex-wrap mt-3 gap-3">
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          styleClass="p-button-secondary"
+          (click)="onRetornar()"
+          [loading]="carregando"
+        ></p-button>
+        <p-button
+          [disabled]="form.invalid"
+          label="Salvar"
+          icon="pi pi-save"
+          (onClick)="onSalvar()"
+          [loading]="carregando"
+        ></p-button>
+      </div>
+
+      <!-- <amx-form-debug [form]="form"></amx-form-debug> -->
     </div>
-    <div class="field">
-      <p-floatLabel>
-        <input
-          id="descricao"
-          type="text"
-          pInputText
-          formControlName="descricao"
-        />
-        <label for="descricao">Descrição</label>
-      </p-floatLabel>
-    </div>
-    <div class="field">
-      <p-inputSwitch formControlName="ativo" />
-    </div>
-  </form>
-  <ng-template pTemplate="footer">
-    <div class="flex gap-3 mt-1">
-      <p-button
-        label="Cancelar"
-        severity="secondary"
-        class="w-full"
-        styleClass="w-full"
-        [routerLink]="['/loja']"
-      />
-      <p-button label="Salvar" class="w-full" styleClass="w-full" />
-    </div>
-  </ng-template>
-</p-card>
+  </div>
+</div>

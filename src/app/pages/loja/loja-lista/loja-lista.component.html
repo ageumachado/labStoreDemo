@@ -1,103 +1,206 @@
-<h3>Gerenciamento de lojas</h3>
+<!-- <p-toast></p-toast> -->
 
-<p-toolbar>
-  <div class="p-toolbar-group-start">
-    <p-button
-      [routerLink]="['criar']"
-      routerLinkActive="router-link-active"
-      pTooltip="Adicionar"
-      icon="pi pi-plus"
-      class="mr-2"
-    />
-  </div>
-</p-toolbar>
+<div class="animate__animated animate__fadeInRight">
+  <div class="card">
+    <p-toolbar styleClass="mb-4">
+      <div class="p-toolbar-group-start">
+        <p-button
+          pRipple
+          label="Adicionar"
+          icon="pi pi-plus"
+          class="button-success mr-2"
+          [routerLink]="['criar']"
+        ></p-button>
+      </div>
+    </p-toolbar>
 
-<p-table
-  #dt2
-  [value]="(lojas$ | async) || []"
-  dataKey="id"
-  [rows]="10"
-  [rowsPerPageOptions]="[10, 25, 50]"
-  [loading]="loading"
-  [paginator]="true"
-  [globalFilterFields]="[
-    'name',
-    'country.name',
-    'representative.name',
-    'status',
-  ]"
-  [tableStyle]="{ 'min-width': '75rem' }"
->
-  <ng-template pTemplate="caption">
-    <div class="flex">
-      <!-- <p-iconField iconPosition="left" class="ml-auto">
-                <p-inputIcon>
-                    <i class="pi pi-search"></i>
-                </p-inputIcon>
-                <input pInputText type="text" (input)="dt2.filterGlobal($event.target.value, 'contains')"
-                    placeholder="Search keyword" />
-            </p-iconField> -->
-    </div>
-  </ng-template>
-  <ng-template pTemplate="header">
-    <tr>
-      <th style="width: 20%">Endpoint</th>
-      <th style="width: 40%">Descrição</th>
-      <th style="width: 40%">Status</th>
-      <th style="width: 40%">Ação</th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-loja>
-    <tr>
-      <td>
-        {{ loja.urlEndpoint }}
-      </td>
-
-      <td>
-        {{ loja.descricao }}
-      </td>
-      <td>
-        {{ loja.ativo ? "Sim" : "Não" }}
-      </td>
-      <td>
-        <div class="flex vertical-align-middle gap-3">
-          <p-button
-            icon="pi pi-pencil"
-            [rounded]="true"
-            severity="info"
-            [routerLink]="['/loja', loja.id]"
-            routerLinkActive="router-link-active"
-          />
-          <p-button icon="pi pi-times" [rounded]="true" severity="danger" />
+    <p-dataView
+      #dv
+      [value]="itemLista"
+      [layout]="layout"
+      [loading]="carregando"
+    >
+      <ng-template pTemplate="header">
+        <div class="flex justify-content-end">
+          <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
         </div>
-      </td>
-      <!-- <td>
-                <img src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png"
-                    [class]="'flag flag-' + customer.country.code" style="width: 20px" />
-                <span class="ml-1 vertical-align-middle">
-                    {{ customer.country.name }}
-                </span>
-            </td> -->
-      <!-- <td>
-                <img [alt]="customer.representative.name"
-                    src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ customer.representative.image }}"
-                    width="32" style="vertical-align: middle" />
-                <span class="ml-1 vertical-align-middle">
-                    {{ customer.representative.name }}
-                </span>
-            </td> -->
-      <!-- <td>
-                <p-tag [value]="customer.status" [severity]="getSeverity(customer.status)" />
-            </td> -->
-      <!-- <td>
-                <i class="pi"
-                    [ngClass]="{ 'text-green-500 pi-check-circle': customer.verified, 'text-red-500 pi-times-circle': !customer.verified }"></i>
-            </td> -->
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="5">No customers found.</td>
-    </tr>
-  </ng-template>
-</p-table>
+      </ng-template>
+      <ng-template let-product pTemplate="list" let-lojas>
+        <div class="grid grid-nogutter">
+          @for (item of lojas; track $index; let first = $first) {
+            <div class="col-12">
+              <div
+                class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4"
+                [ngClass]="{ 'border-top-1 surface-border': !first }"
+              >
+                <!-- <amx-loja-logomarca
+                [amxSrc]="item.imagemLogoUrl"
+              ></amx-loja-logomarca> -->
+                <div
+                  class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4"
+                >
+                  <div
+                    class="flex flex-column align-items-center sm:align-items-start gap-3"
+                  >
+                    <div class="text-2xl font-bold text-900">
+                      {{ item.nome }}
+                    </div>
+                    <!-- <p-rating [ngModel]="product.rating" [readonly]="true" [cancel]="false"></p-rating> -->
+                    <div class="flex align-items-center gap-3">
+                      <span class="flex align-items-center gap-2">
+                        <i class="pi pi-fw pi-at"></i>
+                        <span class="font-semibold">{{ item.endpoint }}</span>
+                      </span>
+                    </div>
+                    <div class="flex align-items-center gap-3">
+                      <span class="flex align-items-center gap-2">
+                        <p-tag
+                          [value]="item?.aberta ? 'Aberta' : 'Fechada'"
+                          [severity]="item?.aberta ? 'success' : 'warning'"
+                        ></p-tag>
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2"
+                  >
+                    <span class="text-2xl font-semibold">
+                      <p-inputSwitch
+                        [(ngModel)]="item.status"
+                        [trueValue]="'Ativo'"
+                        [falseValue]="'Inativo'"
+                        (onChange)="onAtivarChange(item)"
+                        pTooltip="Ativa/desativar a loja"
+                      ></p-inputSwitch>
+                    </span>
+
+                    <!-- <button
+                pButton
+                icon="pi pi-pencil"
+                class="md:align-self-end mb-2 p-button-rounded"
+                [routerLink]="[item.id]"
+              ></button> -->
+                    <p-splitButton
+                      icon="pi pi-ellipsis-v"
+                      appendTo="body"
+                      [model]="itemsMenu"
+                      (onClick)="openMenu(item)"
+                      (onDropdownClick)="openMenu(item)"
+                      styleClass="p-button-raised p-button-rounded p-button-text"
+                    ></p-splitButton>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </ng-template>
+      <ng-template let-product pTemplate="grid" let-lojas>
+        <div class="grid grid-nogutter">
+          @for (item of lojas; track $index) {
+            <div class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2">
+              <div
+                class="p-4 border-1 surface-border surface-card border-round"
+              >
+                <div
+                  class="flex flex-wrap align-items-center justify-content-between gap-2"
+                >
+                  <span class="flex align-items-center gap-2">
+                    <i class="pi pi-fw pi-at"></i>
+                    <span class="font-semibold">{{ item.endpoint }}</span>
+                  </span>
+                  <div class="flex align-items-center gap-3">
+                    <span class="flex align-items-center gap-2">
+                      <p-tag
+                        [value]="item?.aberta ? 'Aberta' : 'Fechada'"
+                        [severity]="item?.aberta ? 'success' : 'warning'"
+                      ></p-tag>
+                    </span>
+                  </div>
+                </div>
+                <div class="flex flex-column align-items-center gap-3 py-5">
+                  <img
+                    class="w-9 shadow-2 border-round"
+                    ngSrc="/assets/images/store.jpg"
+                    width="150"
+                    height="110"
+                    priority
+                    [alt]="item.nome"
+                  />
+                  <div class="text-2xl font-bold">{{ item.nome }}</div>
+                </div>
+                <div class="flex align-items-center justify-content-between">
+                  <span class="text-2xl font-semibold">
+                    <p-inputSwitch
+                      [(ngModel)]="item.status"
+                      [trueValue]="'ativo'"
+                      [falseValue]="'inativo'"
+                      (onChange)="onAtivarChange(item)"
+                    ></p-inputSwitch>
+                  </span>
+                  <!-- <button
+                  pButton
+                  icon="pi pi-pencil"
+                  class="p-button-rounded"
+                  [routerLink]="[item.id]"
+                ></button> -->
+                  <p-splitButton
+                    icon="pi pi-ellipsis-v"
+                    appendTo="body"
+                    [model]="itemsMenu"
+                    (onClick)="openMenu(item)"
+                    (onDropdownClick)="openMenu(item)"
+                    styleClass="p-button-raised p-button-rounded p-button-text"
+                  ></p-splitButton>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </ng-template>
+    </p-dataView>
+  </div>
+
+  <div class="card flex justify-content-center">
+    <p-dialog
+      header="Header"
+      [(visible)]="visibleDialog"
+      [style]="{ width: '40vw' }"
+    >
+      <ng-template pTemplate="header">
+        <span class="text-xl font-bold">{{ itemSel?.nome }}</span>
+      </ng-template>
+      <div class="p-fluid grid mt-2">
+        <div class="col-12 md:col-12">
+          <div class="field">
+            <div class="p-inputgroup">
+              <input
+                #inputLink
+                readonly
+                type="text"
+                [(ngModel)]="inputLinkUrl"
+                pInputText
+              />
+              <!-- <button
+              [ngxClipboard]="inputLink"
+              type="button"
+              pButton
+              icon="pi pi-copy"
+              styleClass="p-button-secondary"
+              (click)="onCopy(inputLink)"
+            ></button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template pTemplate="footer">
+        <p-button
+          icon="pi pi-check"
+          (click)="visibleDialog = false"
+          label="Ok"
+          styleClass="p-button-text"
+        ></p-button>
+      </ng-template>
+    </p-dialog>
+  </div>
+</div>

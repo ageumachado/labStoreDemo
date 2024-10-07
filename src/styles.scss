@@ -9,3 +9,70 @@ $gutter: 1rem; //for primeflex grid system
 // @import "/public/assets/demo/styles/badges.scss";
 // @import "/public/assets/demo/styles/code.scss";
 
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .p-datatable.p-datatable-grid {
+    .p-datatable-header {
+      text-align: left;
+      font-size: 1.5rem;
+    }
+  
+    .p-datatable-thead > tr > th {
+      text-align: left;
+    }
+  
+    .p-dropdown-label:not(.p-placeholder) {
+      text-transform: uppercase;
+    }
+  }
+  
+  .p-datatable.p-datatable-grid:not(.p-datatable-gridlines) {
+    .p-datatable-tbody > tr > td {
+      cursor: auto;
+    }
+  }
+  
+  /* Responsive */
+  .p-datatable-grid .p-datatable-tbody > tr > td .column-title {
+    display: none;
+  }
+  
+  @media screen and (max-width: 960px) {
+    :host ::ng-deep {
+      .p-datatable {
+        &.p-datatable-grid {
+          .p-datatable-thead > tr > th,
+          .p-datatable-tfoot > tr > td {
+            display: none !important;
+          }
+  
+          .p-datatable-tbody > tr {
+            border-bottom: 1px solid var(--surface-d);
+  
+            > td {
+              text-align: left;
+              display: block;
+              border: 0 none !important;
+              width: 100% !important;
+              float: left;
+              clear: left;
+              border: 0 none;
+  
+              .column-title {
+                padding: 0.4rem;
+                min-width: 30%;
+                display: inline-block;
+                margin: -0.4rem 1rem -0.4rem -0.4rem;
+                font-weight: bold;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  /* CSS Table grid */

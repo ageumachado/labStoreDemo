@@ -1,1 +1,109 @@
-<p>produto-form works!</p>
+<div class="grid animate__animated animate__fadeInRight">
+  <div class="col-12">
+    <div class="card shadow-4">
+      <form [formGroup]="form">
+        <p-panel>
+          <ng-template pTemplate="icons"> </ng-template>
+          <ng-template pTemplate="header">
+            <div class="p-panel-header-icon">
+              <i class="pi pi-book"></i>
+            </div>
+            Produto &nbsp;
+            <b>({{ adicionando ? "Adicionando" : "Editando" }})</b>
+          </ng-template>
+          <div class="p-fluid grid mt-2">
+            <div class="col-12 md:col-6">
+              <div class="field">
+                <label for="nome" class="text-blue-500">Nome *</label>
+                <input
+                  formControlName="nome"
+                  type="text"
+                  id="nome"
+                  pInputText
+                  [class]="errorClass('nome', form)"
+                />
+                <small class="p-error block">{{
+                  onObterMensagemError("nome", form)
+                }}</small>
+              </div>
+            </div>
+            <div class="col-12 md:col-12">
+              <div class="field">
+                <label for="descricao">Descrição</label>
+                <textarea
+                  rows="3"
+                  style="resize: none"
+                  cols="30"
+                  pInputTextarea
+                  formControlName="descricao"
+                  type="text"
+                  id="descricao"
+                  [class]="errorClass('descricao', form)"
+                ></textarea>
+                <small class="p-error block">{{
+                  onObterMensagemError("descricao", form)
+                }}</small>
+              </div>
+            </div>
+
+            <div class="col-12 md:col-4">
+              <div class="field">
+                <label for="preco">Preço *</label>
+                <p-inputNumber
+                  formControlName="preco"
+                  id="preco"
+                  mode="currency"
+                  currency="BRL"
+                  locale="Pt-BR"
+                  [min]="0"
+                  [class]="errorClass('preco', form)"
+                ></p-inputNumber>
+                <small class="p-error block">{{
+                  onObterMensagemError("preco", form)
+                }}</small>
+              </div>
+            </div>
+
+            <div class="col-12 md:col-4">
+              <div class="field">
+                <label for="tempoPreparo">Tempo preparo</label>
+                <p-inputNumber
+                  formControlName="tempoPreparo"
+                  id="tempoPreparo"
+                  mode="decimal"
+                  [min]="0"
+                  [class]="errorClass('tempoPreparo', form)"
+                ></p-inputNumber>
+                <small class="p-error block">{{
+                  onObterMensagemError("tempoPreparo", form)
+                }}</small>
+              </div>
+            </div>
+          </div>
+        </p-panel>
+      </form>
+
+      <div class="flex justify-content-between flex-wrap mt-3 gap-3">
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          (click)="onRetornar()"
+          [loading]="carregando"
+          [raised]="true"
+          severity="secondary"
+        ></p-button>
+        <p-button
+          [disabled]="form.invalid"
+          label="Salvar"
+          icon="pi pi-save"
+          (click)="onSalvar()"
+          [loading]="carregando"
+          [raised]="true"
+          severity="info"
+        ></p-button>
+      </div>
+
+      <!-- <amx-form-debug [form]="form"></amx-form-debug> -->
+    </div>
+  </div>
+</div>
