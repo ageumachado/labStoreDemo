@@ -1,0 +1,67 @@
+<div
+  *ngrxLet="{
+    loja: loja$,
+    produtos: produtos$,
+    carregando: carregando$,
+  } as vm"
+  class="grid"
+>
+  @if (vm.loja) {
+    <div class="col-12">
+      <!-- <amx-shop-loja [loja]="vm.loja"></amx-shop-loja> -->
+    </div>
+
+    <p-blockUI [target]="pnl" [blocked]="!vm.loja.aberta">
+      <i class="pi pi-lock" style="font-size: 3rem"></i>
+    </p-blockUI>
+
+    <div class="col-12 lg:col-8 xl:col-8">
+      <p-card #pnl>
+        <app-shop-produto
+          [value]="vm.produtos"
+          [carregando]="vm.carregando"
+          (onAdd)="onAddProduto($event)"
+        ></app-shop-produto>
+      </p-card>
+    </div>
+
+    <p-blockUI [target]="carrinhoTpt" [blocked]="!vm.loja.aberta">
+      <i class="pi pi-lock" style="font-size: 3rem"></i>
+    </p-blockUI>
+
+    <div class="col-12 lg:inline lg:col-4 xl:col-4">
+      <p-card #carrinhoTpt>
+        <!-- <amx-shop-carrinho #carrinho>
+          <div class="block font-bold text-center p-4 border-round">
+            <button
+              [disabled]="!carrinho.existeItens()"
+              pButton
+              type="button"
+              icon="pi pi-shopping-cart"
+              label="Finalizar Carrinho"
+              class="p-button-rounded"
+              (click)="onFinalizarCarrinho()"
+            ></button>
+          </div>
+        </amx-shop-carrinho> -->
+      </p-card>
+    </div>
+  } @else {
+    <!-- <amx-shop-notfound /> -->
+  }
+</div>
+
+<p-dialog
+  [(visible)]="display"
+  [breakpoints]="{ '960px': '75vw' }"
+  [style]="{ width: '35vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <ng-template pTemplate="content">
+    <!-- <amx-shop-carrinho-add
+      (onCancelar)="display = false"
+    ></amx-shop-carrinho-add> -->
+  </ng-template>
+  <ng-template pTemplate="footer"> </ng-template>
+</p-dialog>

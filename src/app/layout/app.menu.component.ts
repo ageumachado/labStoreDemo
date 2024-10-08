@@ -28,12 +28,12 @@ export class AppMenuComponent implements OnInit {
         items: [
           {
             label: 'Loja',
-            icon: 'pi pi-fw pi-id-card',
+            icon: 'pi pi-fw pi-building',
             routerLink: ['/loja'],
           },
           {
             label: 'Produto',
-            icon: 'pi pi-fw pi-database',
+            icon: 'pi pi-fw pi-gift',
             routerLink: ['/produto'],
           },
           // {
