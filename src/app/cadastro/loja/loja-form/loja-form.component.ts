@@ -27,8 +27,6 @@ interface LojaForm {
   nome: FormControl<string>;
   endpoint: FormControl<string | null>;
   observacao: FormControl<string | null>;
-  // endereco: FormGroup<EnderecoForm>;
-  // tipoServico: FormGroup<LojaTipoServicoForm>;
 }
 
 @Component({
@@ -73,26 +71,11 @@ export default class LojaFormComponent {
       ],
     }),
     endpoint: this.fb.nonNullable.control(null, {
-      validators: [
-        Validators.required,
-        // Validators.minLength(this.minLengthTenant),
-        Validators.maxLength(15),
-      ],
-      // asyncValidators: [
-      //   EndpointValidator.createValidatorByValue(this.tenantValidator$),
-      // ],
+      validators: [Validators.required, Validators.maxLength(15)],
     }),
     observacao: this.fb.control(null, {
       validators: [Validators.minLength(3), Validators.maxLength(100)],
     }),
-    // endereco: enderecoGroup,
-    // tipoServico: this.fb.group<LojaTipoServicoForm>({
-    //   podeEntregar: this.fb.nonNullable.control(false),
-    //   podeRetirarLoja: this.fb.nonNullable.control(false),
-    //   tempoEntregaDe: this.fb.control({ value: null, disabled: true }),
-    //   tempoEntregaAte: this.fb.control({ value: null, disabled: true }),
-    //   entregarValorMinimo: this.fb.control({ value: null, disabled: true }),
-    // }),
   });
 
   operacao = 'Adicionando';
