@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { LojaListaComponent } from './loja-lista.component';
+import LojaListaComponent from './loja-lista.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule } from '@angular/router';
+import { NgxIndexedDBModule } from 'ngx-indexed-db';
 
 describe('LojaListaComponent', () => {
   let component: LojaListaComponent;
@@ -8,9 +10,13 @@ describe('LojaListaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LojaListaComponent]
-    })
-    .compileComponents();
+      imports: [
+        LojaListaComponent,
+        BrowserAnimationsModule,
+        RouterModule.forRoot([]),
+        NgxIndexedDBModule.forRoot(),
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LojaListaComponent);
     component = fixture.componentInstance;

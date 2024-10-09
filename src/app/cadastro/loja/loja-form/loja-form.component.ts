@@ -1,5 +1,5 @@
 import { NgClass, JsonPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { FieldsetModule } from 'primeng/fieldset';
@@ -21,9 +21,13 @@ import { MessageModule } from 'primeng/message';
 import { PanelModule } from 'primeng/panel';
 import { TabViewModule } from 'primeng/tabview';
 import { ToastModule } from 'primeng/toast';
+import { LojaService } from '../../../services/loja.service';
+import { Loja } from '../../../models/loja';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgxIndexedDBService } from 'ngx-indexed-db';
 
 interface LojaForm {
-  id?: FormControl<string>;
+  id?: FormControl<number>;
   nome: FormControl<string>;
   endpoint: FormControl<string | null>;
   observacao: FormControl<string | null>;
@@ -53,9 +57,14 @@ interface LojaForm {
   ],
   templateUrl: './loja-form.component.html',
   styleUrl: './loja-form.component.scss',
+  providers: [NgxIndexedDBService],
 })
-export default class LojaFormComponent {
+export default class LojaFormComponent implements OnInit {
+  private readonly lojaService = inject(LojaService);
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
+  private readonly route = inject(ActivatedRoute);
 
   carregando = false;
   adicionando = false;
@@ -80,7 +89,52 @@ export default class LojaFormComponent {
 
   operacao = 'Adicionando';
 
-  onSalvar() {}
+  ngOnInit(): void {
+    let id = this.route.snapshot.params['id'] as number;
+    this.adicionando = id ? false : true;
+
+    console.log(id);
+
+    if (!this.adicionando) {
+      this.lojaService
+        .getById(id as number)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((data) => {
+          console.log(data);
+          this.form.patchValue({
+            id: data?.id,
+            nome: data?.nome,
+            endpoint: data?.endpoint,
+            observacao: data?.observacao,
+          });
+        });
+    }
+  }
+
+  onSalvar() {
+    if (this.form.valid) {
+      let loja = this.form.value as Loja;
+
+      loja.ativo = true;
+      loja.aberta = true;
+
+      this.lojaService
+        .addOrUpdate(loja)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (_) => {
+            alert(
+              `${this.adicionando ? 'Adicionado' : 'Alterado'} com sucesso`,
+            );
+            this.form.reset();
+            if (!this.adicionando) {
+              this.onRetornar();
+            }
+          },
+          error: () => alert('Erro inesperado'),
+        });
+    }
+  }
 
   errorClass(campo: string, form: FormGroup, nomeGrupo = ''): string {
     let input = this.obterCampo(campo, form, nomeGrupo);

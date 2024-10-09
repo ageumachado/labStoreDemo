@@ -36,7 +36,7 @@ export class ShopVitrineComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  loja$ = of<Loja>();
+  loja$ = of<Loja>({} as Loja);
   produtos$ = of<Produto[]>([]);
   carregando$ = of(false);
 

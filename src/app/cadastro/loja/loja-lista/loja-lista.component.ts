@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { of } from 'rxjs';
 import { Loja } from '../../../models/loja';
@@ -17,6 +17,7 @@ import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { MenuItem } from 'primeng/api';
 import { LojaService } from '../../../services/loja.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-loja-lista',
@@ -42,28 +43,29 @@ import { LojaService } from '../../../services/loja.service';
   templateUrl: './loja-lista.component.html',
   styleUrl: './loja-lista.component.scss',
 })
-export default class LojaListaComponent {
+export default class LojaListaComponent implements OnInit {
+  private readonly lojaService = inject(LojaService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
 
   carregando = false;
   layout: 'list' | 'grid' = 'list';
   itemLista: Loja[] = [
-    {
-      id: '',
-      nome: 'Loja DB1',
-      urlEndpoint: 'db1',
-      descricao: 'Empresa Base',
-
-      ativo: true,
-    } as Loja,
-    {
-      id: '',
-      nome: 'Loja SENAC DN',
-      urlEndpoint: 'senacdn',
-      descricao: 'Empresa SENAC DN',
-      aberta: true,
-      ativo: true,
-    } as Loja,
+    // {
+    //   id: '',
+    //   nome: 'Loja DB1',
+    //   urlEndpoint: 'db1',
+    //   descricao: 'Empresa Base',
+    //   ativo: true,
+    // } as Loja,
+    // {
+    //   id: '',
+    //   nome: 'Loja SENAC DN',
+    //   urlEndpoint: 'senacdn',
+    //   descricao: 'Empresa SENAC DN',
+    //   aberta: true,
+    //   ativo: true,
+    // } as Loja,
   ];
   visibleDialog = false;
   inputLinkUrl = '';
@@ -103,6 +105,20 @@ export default class LojaListaComponent {
 
   itemSel?: Loja;
 
+  ngOnInit(): void {
+    this.carregando = true;
+    this.lojaService
+      .getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.itemLista = data as Loja[];
+          this.carregando = false;
+        },
+        error: () => (this.carregando = false),
+      });
+  }
+
   onAtivarChange(item: Loja) {
     // this.lojaService
     //   .updateAtivo(item.id!, item.status)
@@ -125,7 +141,7 @@ export default class LojaListaComponent {
       // this.messageService.add(this.showMensagemError('Selecione um item'));
       return;
     }
-    this.router.navigate(['adm', 'cadastro', 'loja', this.itemSel?.id]);
+    this.router.navigate(['cadastro', 'loja', this.itemSel?.id]);
   }
 
   gerenciarEntrega() {
@@ -133,13 +149,7 @@ export default class LojaListaComponent {
       // this.messageService.add(this.showMensagemError('Selecione um item'));
       return;
     }
-    this.router.navigate([
-      'adm',
-      'cadastro',
-      'loja',
-      this.itemSel?.id,
-      'entrega',
-    ]);
+    this.router.navigate(['cadastro', 'loja', this.itemSel?.id, 'entrega']);
   }
 
   gerarLink() {

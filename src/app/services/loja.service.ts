@@ -24,9 +24,13 @@ export class LojaService {
     return this.dbService.getAll<Loja | null>(this._storeName);
   }
 
-  getByKey(id?: string) {
-    if (!id) return EMPTY;
-    return this.dbService.getByKey<Loja | null>(this._storeName, id);
+  getById(id?: number) {
+    if (!id) {
+      console.log(id);
+      return EMPTY;
+    }
+    console.log(id);
+    return this.dbService.getByKey<Loja | null>(this._storeName, Number(id));
   }
 
   delete(id?: string) {

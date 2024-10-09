@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ProdutoFormComponent } from './produto-form.component';
+import ProdutoFormComponent from './produto-form.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule } from '@angular/router';
 
 describe('ProdutoFormComponent', () => {
   let component: ProdutoFormComponent;
@@ -8,9 +9,12 @@ describe('ProdutoFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProdutoFormComponent]
-    })
-    .compileComponents();
+      imports: [
+        ProdutoFormComponent,
+        RouterModule.forRoot([]),
+        BrowserAnimationsModule,
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ProdutoFormComponent);
     component = fixture.componentInstance;
